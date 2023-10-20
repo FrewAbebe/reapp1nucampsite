@@ -1,14 +1,14 @@
 import { Card, CardImg, CardText, CardBody, Col } from 'reactstrap';
 
 const CampsiteDetail = ({ campsite }) => {
-    const {image, name, descripton } = campsite;
+    const {image, name, description } = campsite;
 
     return (
-        <Col>
+        <Col md='5' className='m-1'>
             <Card>
                 <CardImg top src={image} alt={name} />
                 <CardBody>
-                    <CardText>{descripton}</CardText>
+                    <CardText>{description}</CardText>
                 </CardBody>
             </Card>
         </Col>
