@@ -1,13 +1,52 @@
-import { PARTNERS } from '../../app/shared/PARTNERS';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+// import { PARTNERS } from '../../app/shared/PARTNERS';
+import { baseUrl } from '../../app/shared/baseUrl';
+import { mapImageURL } from '../../utils/mapImageURL';
 
+export const fetchPartners = createAsyncThunk(
+    'partners/fetchPartners',
+    async () => {
+        const response = await fetch(baseUrl + 'partners');
+        if (!response.ok) {
+            return Promise.reject('Unable to fetch, status: ' + response.status)
+        }
+        const data = await response.json()
+        return data;
+    }
+)
 
-// selector returning an entire PARTNERS
-export const selectAllPartners = () => {
-    return PARTNERS;
-} 
+const initialState = {
+    partnersArray: [],
+    isLoading: true,
+    errMsg:''
+};
 
-// selector that finds and returns a Featured partner
-export const selectFeaturedPartner = () => {
-    return PARTNERS.find((partner) => partner.featured) 
+const partnersSlice = createSlice({
+    name: 'partners',
+    initialState,
+    reducers: {},
+    extraReducers: {
+        [fetchPartners.pending]: (state) => {
+            state.isLoading = true;
+        },
+        [fetchPartners.fulfilled]: (state, action) => {
+            state.isLoading = false;
+            state.errMsg = '';
+            state.partnersArray = mapImageURL(action.payload)
+        },
+        [fetchPartners.rejected]: (state, action) => {
+            state.isLoading = false; 
+            state.errMsg = action.error ? action.error.message : 'Fetch failed';
+        }
+    }
+});
+
+export const partnersReducer = partnersSlice.reducer;
+
+export const selectAllPartners = (state) => {
+    return state.partners.partnersArray;
+};
+
+export const selectFeaturedPartner = (state) => {
+    return state.partners.partnersArray.find((partner) => partner.featured);
 }
-
